@@ -140,6 +140,7 @@ function build (config, rootdir, next) {
     
     if (fs.existsSync(path.join(__dirname, 'support', 'convertest', 'test-1.png'))) {
         console.log('Doc converter: found test result image files, bypass converting test');
+        next();
     } else {
         console.log('Doc converter: testing python...');
         check_python(function(err) {
