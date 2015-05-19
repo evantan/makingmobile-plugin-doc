@@ -1,6 +1,6 @@
 {
   "name": "makingmobile-plugin-doc",
-  "version": "0.0.1-beta.5",
+  "version": "2.2.1",
   "description": "MakingMobile framework office document convert plugin",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/makingmobile/makingmobile-plugin-doc.git"
+    "url": "https://github.com/evantan/makingmobile-plugin-doc.git"
   },
   "keywords": [
     "makingmobile",
@@ -19,9 +19,9 @@
     "document",
     "plugin"
   ],
-  "author": "MakingMobile Development Team",
+  "author": "Is-Keen Inc.",
   "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/makingmobile/makingmobile-plugin-doc/issues"
+    "url": "https://github.com/evantan/makingmobile-plugin-doc/issues"
   }
 }

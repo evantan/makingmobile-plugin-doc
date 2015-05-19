@@ -1,1 +1,1 @@
-# Makingmobile framework doc converter plugin
+# Makingmobile framework ms-office word/excel/ppt converter plugin
