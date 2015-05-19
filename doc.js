@@ -301,7 +301,7 @@ MMP_doc.prototype._convert = function (info) {
         if (this.config.msoffice2pdf) {
             cmdstr = 'python "' + msofficescript + '"' + ' -o "';
         } else {
-            cmdstr = 'python "' + libreofficescript + '"' + ' -o "';
+            cmdstr = 'python "' + libreofficescript + '"' + ' -f pdf -o "';
         }
         cmdstr += path.join(info.rootfolder, 'pdf', info.filenamewithouttype + '.pdf') + '" "' + path.join(info.rootfolder, 'origin', info.filename) + '"';
         exec(cmdstr, option, function (error, stdout, stderr) {
