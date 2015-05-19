@@ -96,7 +96,7 @@ MMP_doc.prototype._webput = function (req, res, next) {
     if (req.method.toUpperCase() === 'OPTION') {
         return res.end();
     }
-    filename = req.param('filename');
+    filename = req.query.filename || req.body.filename;
     filedata = req.files.file;
     if (!filename || !filedata) {
         return res.send(400, 'Bad Request');
@@ -108,7 +108,7 @@ MMP_doc.prototype._webput = function (req, res, next) {
  * need md5 param
  */
 MMP_doc.prototype._webquery = function (req, res, next) {
-    var md5 = req.param('md5'),
+    var md5 = req.query.md5 || req.body.md5,
         info;
     
     if (!this._intranetIpaddress(req)) {
@@ -127,7 +127,7 @@ MMP_doc.prototype._webquery = function (req, res, next) {
     if (!info) {
         res.send(400, 'Bad Request');
     } else {
-        res.json(200, info);
+        res.status(200).json(info);
     }
 };
 /*
@@ -136,8 +136,8 @@ MMP_doc.prototype._webquery = function (req, res, next) {
  *      if fail, return json contain info from get method
  */
 MMP_doc.prototype._webget = function (req, res, next) {
-    var md5 = req.param('md5'),
-        page = req.param('page'),
+    var md5 = req.query.md5 || req.body.md5,
+        page = req.query.page || req.body.page,
         info;
     
     if (!this._intranetIpaddress(req)) {
@@ -154,7 +154,7 @@ MMP_doc.prototype._webget = function (req, res, next) {
     info = this.get(md5, page, true);
     if (info.error !== 0) {
         res.set('Content-Type', 'application/json;charset=utf-8');
-        res.json(400, info);
+        res.status(400).json(info);
     } else {
         res.sendfile(info.filepath);
     }
