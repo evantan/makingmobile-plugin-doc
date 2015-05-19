@@ -13,6 +13,7 @@ var LibreOfficeDoctype = ['doc', 'docx', 'xml', 'txt', 'cvs', 'rtf', 'html', 'xl
     ERROR_MAX = 3,
     TAG_END = 'finish',
     TAG_ERROR = 'error',
+    bodyParser = require('body-parser'),
     PROP_NAME = 'doc',
     path = require('path'),
     fs = require('fs'),
@@ -50,7 +51,7 @@ function MMP_doc(mm, plugin_config){
 
     mm.register(this, PROP_NAME);
     
-    mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace), this.mm.express.bodyParser());
+    mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace), bodyParser());
     mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace) + '/put', function(req, res, next) {
         self._webput(req, res, next);
     });
