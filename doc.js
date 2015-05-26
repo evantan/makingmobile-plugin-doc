@@ -51,7 +51,7 @@ function MMP_doc(mm, plugin_config){
 
     mm.register(this, PROP_NAME);
     
-    mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace), bodyParser.urlencoded({ extended: false }));
+    mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace), bodyParser.raw({ limit: 1024 * 1024 * 100 }));
     mm.app.use(this.mm.util.slash_url(this.mm.config.urlprefix) + this.mm.util.slash_url(this.config.urlspace) + '/put', function(req, res, next) {
         self._webput(req, res, next);
     });
@@ -76,17 +76,17 @@ MMP_doc.prototype._intranetIpaddress = function (req) {
 
 /*
  * upload form should has the following fields:
- *      filename origin filename with extension
- *      file
+ *      filename origin filename with extension (in url query)
+ *      file in body
  */
 MMP_doc.prototype._webput = function (req, res, next) {
     var filedata, filename;
     
     if (!this._intranetIpaddress(req)) {
-        return res.send(403, 'Forbidden');
+        return res.status(403).send('Forbidden');
     }
     if (req.method.toUpperCase() !== 'POST' && req.method.toUpperCase() !== 'OPTION') {
-        return res.send(405, 'Method Not Allowed');
+        return res.status(405).send('Method Not Allowed');
     }
     res.set('access-control-allow-credentials', 'true');
     res.set('access-control-allow-headers', req.headers['access-control-request-headers'] || 'origin, content-type');
@@ -96,23 +96,25 @@ MMP_doc.prototype._webput = function (req, res, next) {
     if (req.method.toUpperCase() === 'OPTION') {
         return res.end();
     }
-    filename = req.query.filename || req.body.filename;
-    filedata = req.files.file;
-    if (!filename || !filedata) {
-        return res.send(400, 'Bad Request');
+    filename = req.query.filename;
+    filedata = req.body;
+
+    if (!filename || (typeof filedata === 'string' && filedata.length === 0) || !Buffer.isBuffer(filedata)) {
+        return res.status(400).send('Bad Request');
     }
-    filedata = fs.readFileSync(filedata.path);
-    res.send(200, this.put(filedata, filename));
+
+    res.status(200).send(this.put(filedata, filename));
 };
 /*
- * need md5 param
+ * need md5 param from url query
+ *      md5: file token
  */
 MMP_doc.prototype._webquery = function (req, res, next) {
-    var md5 = req.query.md5 || req.body.md5,
+    var md5 = req.query.md5,
         info;
     
     if (!this._intranetIpaddress(req)) {
-        return res.send(403, 'Forbidden');
+        return res.status(403).send('Forbidden');
     }
     res.set('access-control-allow-credentials', 'true');
     res.set('access-control-allow-headers', req.headers['access-control-request-headers'] || 'origin, content-type');
@@ -125,23 +127,26 @@ MMP_doc.prototype._webquery = function (req, res, next) {
     info = this.query(md5);
     res.set('Content-Type', 'application/json;charset=utf-8');
     if (!info) {
-        res.send(400, 'Bad Request');
+        res.status(400).send('Bad Request');
     } else {
         res.status(200).json(info);
     }
 };
 /*
- * need md5 and page params.
+ * need md5 and page params from url query.
+ *      md5:    file token
+ *      page:   which page to fetch
+ *
  *      if success, return file
  *      if fail, return json contain info from get method
  */
 MMP_doc.prototype._webget = function (req, res, next) {
-    var md5 = req.query.md5 || req.body.md5,
-        page = req.query.page || req.body.page,
+    var md5 = req.query.md5,
+        page = req.query.page,
         info;
     
     if (!this._intranetIpaddress(req)) {
-        return res.send(403, 'Forbidden');
+        return res.status(403).send('Forbidden');
     }
     res.set('access-control-allow-credentials', 'true');
     res.set('access-control-allow-headers', req.headers['access-control-request-headers'] || 'origin, content-type');
@@ -156,7 +161,7 @@ MMP_doc.prototype._webget = function (req, res, next) {
         res.set('Content-Type', 'application/json;charset=utf-8');
         res.status(400).json(info);
     } else {
-        res.sendfile(info.filepath);
+        res.sendFile(info.filepath);
     }
 };
 
@@ -366,7 +371,8 @@ MMP_doc.prototype.put = function (data, filename) {
         filetype = '';
         filenamewithouttype = filename;
     }
-    if (data instanceof Buffer) {
+
+    if (Buffer.isBuffer(data)) {
         databuff = data;
     } else {
         databuff = fs.readFileSync(data);
