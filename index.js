@@ -99,7 +99,7 @@ function check_imageMagick (next) {
 function pdfconvert_test (rootdir, pconfig, next) {
     var script = path.resolve(__dirname, 'support', 'scripts', pconfig.msoffice2pdf ? 'msoffice2pdf.py' : 'unoconv'),
         pathstr = path.resolve(__dirname, 'support', 'convertest', 'test'),
-        cmdstr = 'python "' + script + '"' + ' -f pdf -o "' + pathstr + '.pdf" "' + pathstr + '.docx"',
+        cmdstr = 'python "' + script + '"' + (pconfig.msoffice2pdf ? ' -f pdf' : '') + ' -o "' + pathstr + '.pdf" "' + pathstr + '.docx"',
         option = {};
     
     option = {
