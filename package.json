@@ -1,6 +1,6 @@
 {
   "name": "makingmobile-plugin-doc",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "MakingMobile framework office document convert plugin",
   "main": "index.js",
   "scripts": {
